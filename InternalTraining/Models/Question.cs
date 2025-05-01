@@ -9,7 +9,7 @@ namespace InternalTraining.Models
         public QuestionType QuestionType { get; set; }
 
         public int ExamId { get; set; }
-        public Exam Exam { get; set; }
+        public Exam Exam { get; set; } = null!;
 
         public ICollection<AnswerOption> AnswerOptions { get; set; }
 

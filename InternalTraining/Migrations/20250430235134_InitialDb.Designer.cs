@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InternalTraining.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250430223623_initialCreate")]
-    partial class initialCreate
+    [Migration("20250430235134_InitialDb")]
+    partial class InitialDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -254,6 +254,12 @@ namespace InternalTraining.Migrations
                     b.Property<DateTime>("ExpectedTrainingDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool?>("IsAnswered")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsSeen")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -278,8 +284,13 @@ namespace InternalTraining.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ContactUsId")
-                        .HasColumnType("int");
+                    b.Property<string>("CourseImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -289,8 +300,6 @@ namespace InternalTraining.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ContactUsId");
 
                     b.ToTable("Courses");
                 });
@@ -677,13 +686,13 @@ namespace InternalTraining.Migrations
             modelBuilder.Entity("InternalTraining.Models.CompanyCourse", b =>
                 {
                     b.HasOne("InternalTraining.Models.Company", "Company")
-                        .WithMany()
+                        .WithMany("CompanyCourses")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("InternalTraining.Models.Course", "Course")
-                        .WithMany()
+                        .WithMany("CompanyCourses")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -691,13 +700,6 @@ namespace InternalTraining.Migrations
                     b.Navigation("Company");
 
                     b.Navigation("Course");
-                });
-
-            modelBuilder.Entity("InternalTraining.Models.Course", b =>
-                {
-                    b.HasOne("InternalTraining.Models.ContactUs", null)
-                        .WithMany("DesiredCourses")
-                        .HasForeignKey("ContactUsId");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.CourseFeedback", b =>
@@ -850,12 +852,9 @@ namespace InternalTraining.Migrations
 
             modelBuilder.Entity("InternalTraining.Models.Company", b =>
                 {
-                    b.Navigation("Employees");
-                });
+                    b.Navigation("CompanyCourses");
 
-            modelBuilder.Entity("InternalTraining.Models.ContactUs", b =>
-                {
-                    b.Navigation("DesiredCourses");
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.Course", b =>
@@ -863,6 +862,8 @@ namespace InternalTraining.Migrations
                     b.Navigation("Certificates");
 
                     b.Navigation("Chapters");
+
+                    b.Navigation("CompanyCourses");
 
                     b.Navigation("Feedbacks");
                 });

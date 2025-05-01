@@ -10,7 +10,7 @@
         public int NumberOfLessons { get; set; }
 
         public ICollection<Lesson> Lessons { get; set; }
-        public Exam Exam { get; set; }
+        public Exam Exam { get; set; } = null!;
 
     }
 }

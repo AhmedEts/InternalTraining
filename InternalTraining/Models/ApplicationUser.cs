@@ -9,8 +9,10 @@ namespace InternalTraining.Models
         public string ProfilePicturePath { get; set; }  // Path to profile picture
 
         // Relationships
-        public Company Company { get; set; }
-        public Employee Employee { get; set; }
+        public Company Company { get; set; } = null!;
+
+        public Employee Employee { get; set; } = null!;
+
     }
 
 }

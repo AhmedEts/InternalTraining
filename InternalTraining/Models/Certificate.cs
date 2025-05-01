@@ -9,7 +9,8 @@
         public Employee Employee { get; set; }
 
         public int CourseId { get; set; }
-        public Course Course { get; set; }
+        public Course Course { get; set; } = null!;
+
 
         public DateTime IssueDate { get; set; }
 

@@ -7,7 +7,7 @@
         public bool IsCorrect { get; set; }  // True if this is the correct answer
 
         public int QuestionId { get; set; }
-        public Question Question { get; set; }
+        public Question Question { get; set; } = null!;
 
     }
 }

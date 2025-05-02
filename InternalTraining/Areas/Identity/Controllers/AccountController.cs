@@ -1,13 +1,12 @@
-﻿using InternalTraining.Models;
-using InternalTraining.Models.ViewModel;
+﻿using InternalTraining.Models.ViewModel;
+using InternalTraining.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
-namespace InternalTraining.Areas.Employee.Controllers
+namespace InternalTraining.Areas.Identity.Controllers
 {
-    [Area("Employee")]
+    [Area("Identity")]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
@@ -29,7 +28,7 @@ namespace InternalTraining.Areas.Employee.Controllers
                 await _roleManager.CreateAsync(new IdentityRole("Company"));
                 await _roleManager.CreateAsync(new IdentityRole("Employee"));
             }
-            return View(new RegisterVm());
+            return View();
         }
 
         [HttpPost]
@@ -49,7 +48,8 @@ namespace InternalTraining.Areas.Employee.Controllers
                 if (result.Succeeded)
                 {
                     await signInManager.SignInAsync(appUser, false);
-                    return RedirectToAction("Index", "Home", new { area = "Employee" });
+                    await userManager.AddToRoleAsync(appUser,"Admin");
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
                 }
                 else
                 {
@@ -65,7 +65,7 @@ namespace InternalTraining.Areas.Employee.Controllers
 
         public IActionResult Login()
         {
-            return View(new LoginVm());
+            return View();
         }
 
         [HttpPost]
@@ -82,7 +82,7 @@ namespace InternalTraining.Areas.Employee.Controllers
                     if (result)
                     {
                         await signInManager.SignInAsync(appUser, loginVm.RememberMe);
-                        return RedirectToAction("Index", "Home", new { area = "Employee" });
+                        return RedirectToAction("Index", "Home", new { area = "Admin" });
                     }
                     else
                     {
@@ -102,7 +102,7 @@ namespace InternalTraining.Areas.Employee.Controllers
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login", "Account", new { area = "Identity" });
         }
         [HttpGet]
         public async Task<IActionResult> Profile()
@@ -179,10 +179,11 @@ namespace InternalTraining.Areas.Employee.Controllers
 
                 }
                 await signInManager.RefreshSignInAsync(appUser);
-                return RedirectToAction("Index", "Home", new { area = "Customer" });
+                return RedirectToAction("Index", "Home", new { area = "Company" });
             }
             return View(profileVm);
         }
 
     }
 }
+

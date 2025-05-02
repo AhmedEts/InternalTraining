@@ -13,6 +13,8 @@
 
         public ICollection<CompanyCourse> CompanyCourses { get; set; } = new List<CompanyCourse>();
 
+        public ICollection<EmployeeProgress> Progresses { get; set; } = new List<EmployeeProgress>();
+
 
 
     }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using InternalTraining.Models.ViewModel;
 
 namespace InternalTraining.Data
 {
@@ -27,5 +28,7 @@ namespace InternalTraining.Data
             base.OnModelCreating(builder);
             builder.Entity<CompanyCourse>().HasKey(e => new { e.CompanyId, e.CourseId });
         }
+        public DbSet<InternalTraining.Models.ViewModel.RegisterVm> RegisterVm { get; set; } = default!;
+        public DbSet<InternalTraining.Models.ViewModel.LoginVm> LoginVm { get; set; } = default!;
     }
 }

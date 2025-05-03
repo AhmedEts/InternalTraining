@@ -5,9 +5,10 @@ namespace InternalTraining.Models.ViewModel
     public class ProfileVm
     {
         public string Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string UserName { get; set; }
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
+        public string? ProfilePicture { get; set; }
         [DataType(DataType.Password)]
         public string? CurrentPassword { get; set; }
         [DataType(DataType.Password)]

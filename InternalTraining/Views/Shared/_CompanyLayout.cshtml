@@ -51,7 +51,11 @@
             <nav id="navmenu" class="navmenu">
                 <ul>
                     <li><a href="index.html" class="active">Home<br></a></li>
-                    <li><a href="/Admin/Home/Index">Admin Dashboard</a></li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li><a href="/Admin/Home/Index">Admin Dashboard</a></li>
+                    }
+                   
                     <li><a href="about.html">About</a></li>
                     <li><a href="courses.html">Courses</a></li>
                     <li><a href="trainers.html">Trainers</a></li>

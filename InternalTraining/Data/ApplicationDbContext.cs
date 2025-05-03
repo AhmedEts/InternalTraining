@@ -30,5 +30,8 @@ namespace InternalTraining.Data
         }
         public DbSet<InternalTraining.Models.ViewModel.RegisterVm> RegisterVm { get; set; } = default!;
         public DbSet<InternalTraining.Models.ViewModel.LoginVm> LoginVm { get; set; } = default!;
+        public DbSet<InternalTraining.Models.ViewModel.ForgetPasswordVm> ForgetPasswordVm { get; set; } = default!;
+        public DbSet<InternalTraining.Models.ViewModel.ResetPasswordVm> ResetPasswordVm { get; set; } = default!;
+        public DbSet<InternalTraining.Models.ViewModel.ProfileVm> ProfileVm { get; set; } = default!;
     }
 }

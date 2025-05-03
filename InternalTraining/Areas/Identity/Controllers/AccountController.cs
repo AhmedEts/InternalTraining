@@ -3,21 +3,26 @@ using InternalTraining.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using E_TicketMovies.Email_Sender;
 
 namespace InternalTraining.Areas.Identity.Controllers
 {
     [Area("Identity")]
+    //[Authorize (Roles ="Admin")]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IEmailSender emailSender;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this._roleManager = roleManager;
+            this.emailSender = emailSender;
         }
         [HttpGet]
         public async Task<IActionResult> Register()
@@ -44,12 +49,20 @@ namespace InternalTraining.Areas.Identity.Controllers
                     Email = registerVm.Email,
                 };
 
+                var IsExist = await userManager.FindByEmailAsync(registerVm.Email);
+                  if (IsExist != null) 
+                  {
+                    ModelState.AddModelError("Email", "Email is already taken.");
+                    return View(registerVm);
+
+                }
+
                 var result = await userManager.CreateAsync(appUser, registerVm.Password);
                 if (result.Succeeded)
                 {
                     await signInManager.SignInAsync(appUser, false);
                     await userManager.AddToRoleAsync(appUser,"Admin");
-                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                    return RedirectToAction("Login", "Account", new { area = "Identity" });
                 }
                 else
                 {
@@ -117,73 +130,157 @@ namespace InternalTraining.Areas.Identity.Controllers
             {
                 Id = appUser.Id,
                 UserName = appUser.UserName,
-                Email = appUser.Email
             };
             return View(profileInfo);
         }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Profile(ProfileVm profileVm)
+        public async Task<IActionResult> Profile(ProfileVm profileVm, IFormFile? file)
         {
+            var user = await userManager.GetUserAsync(User);
             if (ModelState.IsValid)
             {
-                var appUser = await userManager.GetUserAsync(User);
-                if (appUser == null)
+                if (user != null)
                 {
-                    ModelState.AddModelError("", "Sorry Something is wrong");
-                    return View(profileVm);
-                }
-
-                if (appUser.Email != profileVm.Email)
-                {
-                    var emailToken = await userManager.GenerateChangeEmailTokenAsync(appUser, profileVm.Email);
-                    var result = await userManager.ChangeEmailAsync(appUser, profileVm.Email, emailToken);
-
-                    if (!result.Succeeded)
+                    if (file != null && file.Length > 0)
                     {
-                        foreach (var error in result.Errors)
+                        // Delete old image if it exists
+                        if (!string.IsNullOrEmpty(user.ProfilePicturePath))
                         {
-                            ModelState.AddModelError("", error.Description);
+                            var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images/admin", user.ProfilePicturePath);
+                            if (System.IO.File.Exists(oldPath))
+                            {
+                                System.IO.File.Delete(oldPath);
+                            }
                         }
-                        return View(profileVm);
+
+                        // Upload new image
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images/admin", fileName);
+
+                        using (var stream = System.IO.File.Create(filePath))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        user.ProfilePicturePath = fileName;
                     }
 
-                }
+                    // Update other fields
+                    user.UserName = profileVm.UserName;
+                    user.FirstName = profileVm.FirstName;
+                    user.LastName = profileVm.LastName;
 
-                if (appUser.UserName != profileVm.UserName)
-                {
-                    appUser.UserName = profileVm.UserName;
-                    var result = await userManager.UpdateAsync(appUser);
-                    if (!result.Succeeded)
+                    // Only update password if needed
+                    if (profileVm.NewPassword!= null && profileVm.NewPassword == profileVm.ConfirmPassword)
                     {
-                        foreach (var error in result.Errors)
+                        var result = await userManager.ChangePasswordAsync(user, profileVm.CurrentPassword, profileVm.NewPassword);
+                        if (!result.Succeeded)
                         {
-                            ModelState.AddModelError("", error.Description);
+                            foreach (var error in result.Errors)
+                            {
+                                ModelState.AddModelError(string.Empty, error.Description);
+                            }
+                            ViewBag.ProfileImage = user.ProfilePicturePath;
+                            return View(profileVm);
                         }
-                        return View(profileVm);
                     }
 
-                }
+                    // Update user in DB
+                    await userManager.UpdateAsync(user);
 
-                if (!string.IsNullOrEmpty(profileVm.CurrentPassword) && !string.IsNullOrEmpty(profileVm.NewPassword))
-                {
-                    var result = await userManager.ChangePasswordAsync(appUser, profileVm.CurrentPassword, profileVm.NewPassword);
-                    if (!result.Succeeded)
-                    {
-                        foreach (var error in result.Errors)
-                        {
-                            ModelState.AddModelError("", error.Description);
-                        }
-                        return View(profileVm);
-                    }
-
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
                 }
-                await signInManager.RefreshSignInAsync(appUser);
-                return RedirectToAction("Index", "Home", new { area = "Company" });
             }
+
+            ViewBag.ProfileImage = user?.ProfilePicturePath;
             return View(profileVm);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ForgetPassword()
+        {
+
+            return View(new ForgetPasswordVm());  
+        }
+        [HttpPost]
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordVm model)
+        {
+
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "The Email Is Wrong!");
+                return View();
+            }
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            var link = Url.Action("ResetPassword", "Account", new { token, email = model.Email }, Request.Scheme);
+
+            var body = $"Click the link to reset your password: <a href='{link}'>Reset Password</a>";
+            await emailSender.SendEmailAsync(model.Email, "Reset Password", body);
+
+            ModelState.AddModelError("Email", "Please Check Your Email");
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string token, string email)
+        {
+            var model = new ResetPasswordVm
+            {
+                Token = token,
+                Email = email
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordVm resetPasswordVm)
+        {
+            if (!ModelState.IsValid) 
+                return View(resetPasswordVm);
+            var user = await userManager.FindByEmailAsync(resetPasswordVm.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Something went wrong. Please try again.");
+                return View(resetPasswordVm);
+            }
+            var result = await userManager.ResetPasswordAsync(user, resetPasswordVm.Token, resetPasswordVm.ConfirmPassword);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View(resetPasswordVm);
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation() // this if a page that display a success reset pass.
+        {
+            return View();
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserProfile()
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            return Json(new
+            {
+                profilePicture = user.ProfilePicturePath
+            });
+        }
     }
 }
 

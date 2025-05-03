@@ -1,3 +1,4 @@
+using E_TicketMovies.Email_Sender;
 using InternalTraining.Data;
 using InternalTraining.Models;
 using InternalTraining.Unit_of_Work;
@@ -27,7 +28,12 @@ namespace InternalTraining
 
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+            });
 
             var app = builder.Build();
 

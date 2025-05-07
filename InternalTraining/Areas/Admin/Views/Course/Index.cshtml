@@ -1,8 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model IEnumerable<Course>
 <div class="container-fluid">
 
     <!-- Title & Create Button -->
@@ -44,20 +40,27 @@
                     </thead>
                     <tbody>
                         <!-- Example static movie row -->
-                        <tr>
-                            <td>Sample Course</td>
-                            <td class="text-center">
-                                <img src="" alt="" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
-                            </td>
-                            <td>
-                                <a href="" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <button class="btn btn-danger btn-sm" onclick="confirmDelete(1)">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </td>
-                        </tr>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td class="text-center">
+                                    <img src="/images/admin/@item.CourseImage" alt="" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                </td>
+                                <td>
+
+                                    <a href="/Admin/Course/Edit?courseId=@item.Id" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+
+
+                                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(1)">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+
                         <!-- Add more static rows as needed -->
                     </tbody>
                 </table>
@@ -88,7 +91,7 @@
 <!-- Include SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function confirmDelete(MovieId) {
+    function confirmDelete(CourseId) {
         Swal.fire({
             title: "Are you sure?",
             text: "This action cannot be undone!",
@@ -100,8 +103,8 @@
             cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "/Admin/Movie/Delete/" + MovieId;
-            }
+            window.location.href = "/Admin/Course/Delete?courseId=" + CourseId;
+                }
         });
     }
 </script>

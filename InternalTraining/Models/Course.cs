@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace InternalTraining.Models
 {
@@ -14,18 +15,27 @@ namespace InternalTraining.Models
         [Range(3, 20, ErrorMessage = "Number of chapters must be between 3 and 20.")]
         public int NumberOfChapters { get; set; }
 
-        [Required]
+        
         [RegularExpression("^.*\\.(png|jpg)$")]
-        public string CourseImage { get; set; }
+        public string? CourseImage { get; set; }
 
         [Required]
         [StringLength(300, MinimumLength = 10, ErrorMessage = "Description must be between 10 and 300 characters.")]
         public string Description { get; set; }
 
+        [ValidateNever]
         public ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
+
+        [ValidateNever]
         public ICollection<CourseFeedback> Feedbacks { get; set; } = new List<CourseFeedback>();
+
+        [ValidateNever]
         public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
+
+        [ValidateNever]
         public ICollection<CompanyCourse> CompanyCourses { get; set; } = new List<CompanyCourse>();
+
+        [ValidateNever]
         public ICollection<EmployeeProgress> Progresses { get; set; } = new List<EmployeeProgress>();
     }
 

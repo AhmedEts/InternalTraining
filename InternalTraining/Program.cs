@@ -29,7 +29,8 @@ namespace InternalTraining
            .AddDefaultTokenProviders();
 
        
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();            
+           
             builder.Services.AddTransient<IEmailSender, EmailSender>();
             builder.Services.ConfigureApplicationCookie(options =>
             {

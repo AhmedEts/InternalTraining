@@ -1,6 +1,8 @@
 using E_TicketMovies.Email_Sender;
 using InternalTraining.Data;
 using InternalTraining.Models;
+using InternalTraining.Repositories.IRepository;
+using InternalTraining.Repositories;
 using InternalTraining.Unit_of_Work;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +28,7 @@ namespace InternalTraining
            .AddEntityFrameworkStores<ApplicationDbContext>()
            .AddDefaultTokenProviders();
 
-
+       
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddTransient<IEmailSender, EmailSender>();
             builder.Services.ConfigureApplicationCookie(options =>

@@ -4,6 +4,7 @@ using InternalTraining.Repositories.IRepository;
 using InternalTraining.Unit_of_Work;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternalTraining.Areas.Admin.Controllers
 {
@@ -157,12 +158,10 @@ namespace InternalTraining.Areas.Admin.Controllers
                         System.IO.File.Delete(oldPath);
                     }
                 }
-
                 // Delete img name in db
                 _unitOfWork.Courses.Delete(course);
                 _unitOfWork.Commit();
 
-         
                 return RedirectToAction("Index", "Course", new { area = "admin" });
 
             }

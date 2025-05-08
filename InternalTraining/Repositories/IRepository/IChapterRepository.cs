@@ -1,9 +1,10 @@
 ﻿using InternalTraining.Models;
 
+
 namespace InternalTraining.Repositories.IRepository
 {
-    public interface ICourseRepository : IRepository<Course>
+    public interface IChapterRepository : IRepository<Chapter>
     {
-  
+
     }
 }

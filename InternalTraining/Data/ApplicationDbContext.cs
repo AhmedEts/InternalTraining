@@ -19,12 +19,14 @@ namespace InternalTraining.Data
         public DbSet<Payment> Payments { get; }
         public DbSet<Question> Questions { get; }
         public DbSet<AnswerOption> AnswerOptions { get; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
             builder.Entity<CompanyCourse>().HasKey(e => new { e.CompanyId, e.CourseId });
         }

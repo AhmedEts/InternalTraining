@@ -14,9 +14,11 @@ namespace InternalTraining.Models
         public string Email { get; set; }
         [Required]
         public int NumberOfEmployees { get; set; }
+
         public bool? IsSeen { get; set; }
 
         public  bool? IsAnswered { get; set; }
+
         public DateTime ExpectedTrainingDate { get; set; }
         [ValidateNever]
         public string Message { get; set; }

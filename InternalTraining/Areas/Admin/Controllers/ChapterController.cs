@@ -20,9 +20,19 @@ namespace InternalTraining.Areas.Admin.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        public IActionResult Index()
+        public IActionResult Index(int page= 1)
         {
             var chapter = _unitOfWork.Chapters.Get(includes: [e => e.Course]);
+            int totalCount = chapter.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            if (page > totalPages && totalPages > 0)
+                return RedirectToAction("NotFoundPage", "Home", new { area = "End User" });
+
+            chapter = chapter.Skip((page - 1) * pageSize).Take(pageSize);
+
+            ViewBag.totalPages = totalPages;
             return View(chapter.ToList());
         }
 
@@ -75,7 +85,7 @@ namespace InternalTraining.Areas.Admin.Controllers
             {
                 _unitOfWork.Chapters.Update(chapter);
                 _unitOfWork.Commit();
-                return RedirectToAction("Index", "Course", new { area = "Admin" });
+                return RedirectToAction("Index", "Chapter", new { area = "Admin" });
             }
 
             var courses = _unitOfWork.Courses.Get();

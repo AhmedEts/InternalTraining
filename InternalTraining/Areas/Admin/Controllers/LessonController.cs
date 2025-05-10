@@ -19,9 +19,20 @@ namespace InternalTraining.Areas.Admin.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1 )
         {
+
             var lessons = _unitOfWork.Lessons.Get(includes: [e => e.Chapter]);
+            int totalCount = lessons.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            if (page > totalPages && totalPages > 0)
+                return RedirectToAction("NotFoundPage", "Home", new { area = "End User" });
+
+            lessons = lessons.Skip((page - 1) * pageSize).Take(pageSize);
+
+            ViewBag.totalPages = totalPages;
             return View(lessons.ToList());
         }
 
@@ -54,7 +65,7 @@ namespace InternalTraining.Areas.Admin.Controllers
         {
             var lesson = _unitOfWork.Lessons.GetOne(e => e.Id == id);
             if (lesson == null)
-                return RedirectToAction("Error", "Home");
+                return RedirectToAction("Error", "Lesson");
 
             var chapters = _unitOfWork.Chapters.Get();
             ViewBag.ChapterId = new SelectList(chapters, "Id", "Name", lesson.ChapterId);
@@ -69,7 +80,7 @@ namespace InternalTraining.Areas.Admin.Controllers
             {
                 _unitOfWork.Lessons.Update(lesson);
                 _unitOfWork.Commit();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Lesson");
             }
 
             var chapters = _unitOfWork.Chapters.Get();
@@ -82,7 +93,7 @@ namespace InternalTraining.Areas.Admin.Controllers
         {
             var lesson = _unitOfWork.Lessons.GetOne(e => e.Id == id);
             if (lesson == null)
-                return RedirectToAction("Error", "Home");
+                return RedirectToAction("Error", "Lesson");
 
             _unitOfWork.Lessons.Delete(lesson);
             _unitOfWork.Commit();

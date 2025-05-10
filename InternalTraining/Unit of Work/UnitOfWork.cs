@@ -47,7 +47,6 @@ namespace InternalTraining.Unit_of_Work
         {
             _context.SaveChanges();
         }
-
         public void Dispose()
         {
             _context.Dispose(); 

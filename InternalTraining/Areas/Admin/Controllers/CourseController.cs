@@ -18,13 +18,25 @@ namespace InternalTraining.Areas.Admin.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1, int pageSize = 5)
         {
-            var courses = _unitOfWork.Courses.Get();
-            return View( courses.ToList());
+            var allCourses = _unitOfWork.Courses.Get(); 
+
+            int totalCourses = allCourses.Count();
+            int totalPages = (int)Math.Ceiling((double)totalCourses / pageSize);
+
+            var courses = allCourses
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(courses);
         }
 
-            [HttpGet]
+        [HttpGet]
         public IActionResult Create()
         {
             var courses = _unitOfWork.Courses.Get();
@@ -74,7 +86,7 @@ namespace InternalTraining.Areas.Admin.Controllers
                 return View(course);
             }
 
-            return RedirectToAction("Error", "Home");
+            return RedirectToAction("Error", "Courses");
         }
 
         [HttpPost]
@@ -163,7 +175,6 @@ namespace InternalTraining.Areas.Admin.Controllers
                 _unitOfWork.Commit();
 
                 return RedirectToAction("Index", "Course", new { area = "admin" });
-
             }
 
             return RedirectToAction("Error", "Home");

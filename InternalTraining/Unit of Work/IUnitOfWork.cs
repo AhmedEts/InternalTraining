@@ -7,7 +7,6 @@ namespace InternalTraining.Unit_of_Work
 {
     public interface IUnitOfWork : IDisposable
     {
-
         IRepository<Chapter> Chapters { get; }
         IRepository<ContactUs> ContactsUs { get; }
 

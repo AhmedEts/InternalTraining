@@ -11,7 +11,9 @@ namespace InternalTraining.Models
 
         [ValidateNever]
         public Course Course { get; set; }
+
         public string Name { get; set; }
+
         public int NumberOfLessons { get; set; }
 
         [ValidateNever]

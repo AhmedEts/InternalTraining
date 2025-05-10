@@ -22,7 +22,7 @@ namespace InternalTraining.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            var chapter = _unitOfWork.Chapters.Get();
+            var chapter = _unitOfWork.Chapters.Get(includes: [e => e.Course]);
             return View(chapter.ToList());
         }
 

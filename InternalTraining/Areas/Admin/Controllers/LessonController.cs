@@ -21,7 +21,7 @@ namespace InternalTraining.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var lessons = _unitOfWork.Lessons.Get();
+            var lessons = _unitOfWork.Lessons.Get(includes: [e => e.Chapter]);
             return View(lessons.ToList());
         }
 

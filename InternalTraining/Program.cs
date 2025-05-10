@@ -1,4 +1,6 @@
 using E_TicketMovies.Email_Sender;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using InternalTraining.Data;
 using InternalTraining.Models;
 using InternalTraining.Repositories.IRepository;
@@ -6,6 +8,12 @@ using InternalTraining.Repositories;
 using InternalTraining.Unit_of_Work;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 
 namespace InternalTraining
 {
@@ -28,7 +36,26 @@ namespace InternalTraining
            .AddEntityFrameworkStores<ApplicationDbContext>()
            .AddDefaultTokenProviders();
 
-       
+            //builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+            //{
+            //    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+            //    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+            //});
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+            });
+
+
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();            
            
             builder.Services.AddTransient<IEmailSender, EmailSender>();
@@ -49,8 +76,7 @@ namespace InternalTraining
             }
 
             app.UseHttpsRedirection();
-            app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
@@ -63,3 +89,6 @@ namespace InternalTraining
         }
     }
 }
+
+
+   

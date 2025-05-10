@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using E_TicketMovies.Email_Sender;
+using System.Security.Claims;
 
 namespace InternalTraining.Areas.Identity.Controllers
 {
@@ -112,6 +113,74 @@ namespace InternalTraining.Areas.Identity.Controllers
             }
             return View(loginVm);
         }
+        [HttpGet]
+        public IActionResult ExternalLogin(string provider)
+        {
+            // إعداد رابط العودة بعد إتمام المصادقة الخارجية
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account");
+
+            // إعداد خصائص المصادقة الخارجية
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+            // بدء عملية المصادقة مع مزود الخدمة الخارجي (مثل جوجل)
+            return Challenge(properties, provider);
+        }
+        [HttpGet]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            returnUrl ??= Url.Content("~/");
+
+            if (remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
+                return View(nameof(Login));
+            }
+
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            }
+            else
+            {
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                var user = await userManager.FindByEmailAsync(email);
+
+                if (user == null)
+                {
+                    user = new ApplicationUser
+                    {
+                        UserName = email,
+                        Email = email
+                    };
+                    var createResult = await userManager.CreateAsync(user);
+                    if (createResult.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(user, "Admin"); // optional
+                        await userManager.AddLoginAsync(user, info);
+                        await signInManager.SignInAsync(user, isPersistent: false);
+                        return RedirectToAction("Index", "Home", new { area = "Admin" });
+                    }
+                    else
+                    {
+                        return RedirectToAction(nameof(Register));
+                    }
+                }
+
+                // ✅ لو المستخدم موجود، اربطه بالحساب الخارجي وسجّله دخول
+                await userManager.AddLoginAsync(user, info);
+                await signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            }
+        }
+
+
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();

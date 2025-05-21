@@ -6,7 +6,6 @@ namespace InternalTraining.Models
     public class Chapter
     {
         public int Id { get; set; }
-
         public int CourseId { get; set; }
 
         [ValidateNever]

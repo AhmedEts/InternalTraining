@@ -22,7 +22,7 @@ namespace InternalTraining.Areas.Admin.Controllers
         public IActionResult Index(int page = 1 )
         {
 
-            var lessons = _unitOfWork.Lessons.Get(includes: [e => e.Chapter]);
+            var lessons = _unitOfWork.Lessons.Get(includes: [e => e.Course]);
             int totalCount = lessons.Count();
             int pageSize = 5;
             int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
@@ -39,8 +39,8 @@ namespace InternalTraining.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var chapters = _unitOfWork.Chapters.Get();
-            ViewBag.ChapterId = new SelectList(chapters, "Id", "Name");
+            var courses = _unitOfWork.Courses.Get(); // Get courses instead of chapters
+            ViewBag.CourseId = new SelectList(courses, "Id", "Name");
             return View(new Lesson());
         }
 
@@ -55,8 +55,8 @@ namespace InternalTraining.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
-            var chapters = _unitOfWork.Chapters.Get();
-            ViewBag.ChapterId = new SelectList(chapters, "Id", "Name", lesson.ChapterId);
+            var courses = _unitOfWork.Courses.Get();
+            ViewBag.CourseId = new SelectList(courses, "Id", "Name", lesson.CourseId);
             return View(lesson);
         }
 
@@ -68,7 +68,7 @@ namespace InternalTraining.Areas.Admin.Controllers
                 return RedirectToAction("Error", "Lesson");
 
             var chapters = _unitOfWork.Chapters.Get();
-            ViewBag.ChapterId = new SelectList(chapters, "Id", "Name", lesson.ChapterId);
+            ViewBag.ChapterId = new SelectList(chapters, "Id", "Name", lesson.CourseId);
             return View(lesson);
         }
 
@@ -84,7 +84,7 @@ namespace InternalTraining.Areas.Admin.Controllers
             }
 
             var chapters = _unitOfWork.Chapters.Get();
-            ViewBag.ChapterId = new SelectList(chapters, "Id", "Name", lesson.ChapterId);
+            ViewBag.ChapterId = new SelectList(chapters, "Id", "Name", lesson.CourseId);
             return View(lesson);
         }
 

@@ -378,12 +378,15 @@ namespace InternalTraining.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChapterId")
+                    b.Property<int?>("ChapterId")
                         .HasColumnType("int");
 
                     b.Property<string>("ContentUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -392,6 +395,8 @@ namespace InternalTraining.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChapterId");
+
+                    b.HasIndex("CourseId");
 
                     b.ToTable("Lessons");
                 });
@@ -875,13 +880,17 @@ namespace InternalTraining.Migrations
 
             modelBuilder.Entity("InternalTraining.Models.Lesson", b =>
                 {
-                    b.HasOne("InternalTraining.Models.Chapter", "Chapter")
+                    b.HasOne("InternalTraining.Models.Chapter", null)
                         .WithMany("Lessons")
-                        .HasForeignKey("ChapterId")
+                        .HasForeignKey("ChapterId");
+
+                    b.HasOne("InternalTraining.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Chapter");
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.Option", b =>

@@ -10,7 +10,7 @@ namespace InternalTraining.Data
     {
         public DbSet<Chapter> Chapters { get; }
         public DbSet<ContactUs> ContactsUs { get; }
-
+        public DbSet<Option> Options { get; }
         public DbSet<Course> Courses { get; }
         public DbSet<CourseFeedback> CourseFeedbacks { get; }
         public DbSet<EmployeeProgress> EmployeesProgress { get; }
@@ -18,7 +18,7 @@ namespace InternalTraining.Data
         public DbSet<Lesson> Lessons { get; }
         public DbSet<Payment> Payments { get; }
         public DbSet<Question> Questions { get; }
-        public DbSet<AnswerOption> AnswerOptions { get; }
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

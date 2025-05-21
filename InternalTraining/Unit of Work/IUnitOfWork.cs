@@ -9,7 +9,7 @@ namespace InternalTraining.Unit_of_Work
     {
         IRepository<Chapter> Chapters { get; }
         IRepository<ContactUs> ContactsUs { get; }
-
+        IRepository<Option> Options { get; }
         IRepository<Course> Courses { get; }
         IRepository<CourseFeedback> CourseFeedbacks { get; }
         IRepository<EmployeeProgress> EmployeesProgress { get; }
@@ -17,7 +17,6 @@ namespace InternalTraining.Unit_of_Work
         IRepository<Lesson> Lessons { get; }
         IRepository<Payment> Payments { get; }
         IRepository<Question> Questions { get; }
-        IRepository<AnswerOption> AnswerOptions { get; }
         
         void Commit();
 

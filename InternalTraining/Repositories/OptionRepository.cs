@@ -4,9 +4,9 @@ using InternalTraining.Models;
 
 namespace InternalTraining.Repositories
 {
-    public class AnswerOptionRepository : Repository<AnswerOption>
+    public class OptionsRepository : Repository<Option>
     {
-        public AnswerOptionRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public OptionsRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
     }

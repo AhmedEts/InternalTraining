@@ -26,7 +26,8 @@ namespace InternalTraining.Unit_of_Work
         public IRepository<Payment> Payments { get; private set; }
 
         public IRepository<Question> Questions { get; private set; }
-        public IRepository<AnswerOption> AnswerOptions { get; private set; }
+        public IRepository<Option> Options { get; private set; }
+
 
         public UnitOfWork(ApplicationDbContext _context)
         {
@@ -40,7 +41,7 @@ namespace InternalTraining.Unit_of_Work
             Lessons = new Repository<Lesson>(_context);
             Payments = new Repository<Payment>(_context);
             Questions = new Repository<Question>(_context);
-            AnswerOptions = new Repository<AnswerOption>(_context); 
+            Questions = new Repository<Question>(_context);
 
         }
         public void Commit()

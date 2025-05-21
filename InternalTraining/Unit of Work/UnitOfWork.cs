@@ -41,8 +41,7 @@ namespace InternalTraining.Unit_of_Work
             Lessons = new Repository<Lesson>(_context);
             Payments = new Repository<Payment>(_context);
             Questions = new Repository<Question>(_context);
-            Questions = new Repository<Question>(_context);
-
+            Options = new Repository<Option>(_context);
         }
         public void Commit()
         {

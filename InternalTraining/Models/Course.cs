@@ -11,8 +11,9 @@ namespace InternalTraining.Models
         [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters.")]
         public string Name { get; set; }
 
+
         [Required]
-        [Range(3, 20, ErrorMessage = "Number of chapters must be between 3 and 20.")]
+        [Range(3, 40, ErrorMessage = "Number of chapters must be between 3 and 40.")]
         public int NumberOfChapters { get; set; }
 
         
@@ -25,6 +26,10 @@ namespace InternalTraining.Models
 
         [ValidateNever]
         public ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
+
+        [ValidateNever]
+        public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+
 
         [ValidateNever]
         public ICollection<CourseFeedback> Feedbacks { get; set; } = new List<CourseFeedback>();

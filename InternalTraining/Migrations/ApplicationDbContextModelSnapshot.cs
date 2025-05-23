@@ -378,7 +378,7 @@ namespace InternalTraining.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ChapterId")
+                    b.Property<int>("ChapterId")
                         .HasColumnType("int");
 
                     b.Property<string>("ContentUrl")
@@ -880,15 +880,19 @@ namespace InternalTraining.Migrations
 
             modelBuilder.Entity("InternalTraining.Models.Lesson", b =>
                 {
-                    b.HasOne("InternalTraining.Models.Chapter", null)
+                    b.HasOne("InternalTraining.Models.Chapter", "Chapter")
                         .WithMany("Lessons")
-                        .HasForeignKey("ChapterId");
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("InternalTraining.Models.Course", "Course")
-                        .WithMany()
+                        .WithMany("Lessons")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Chapter");
 
                     b.Navigation("Course");
                 });
@@ -1010,6 +1014,8 @@ namespace InternalTraining.Migrations
                     b.Navigation("CompanyCourses");
 
                     b.Navigation("Feedbacks");
+
+                    b.Navigation("Lessons");
 
                     b.Navigation("Progresses");
                 });

@@ -24,12 +24,28 @@ namespace InternalTraining.Data
             : base(options)
         {
         }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
             base.OnModelCreating(builder);
-            builder.Entity<CompanyCourse>().HasKey(e => new { e.CompanyId, e.CourseId });
+
+            builder.Entity<CompanyCourse>()
+                .HasKey(e => new { e.CompanyId, e.CourseId });
+
+            builder.Entity<Lesson>()
+                .HasOne(l => l.Course)
+                .WithMany(c => c.Lessons)
+                .HasForeignKey(l => l.CourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Lesson>()
+                .HasOne(l => l.Chapter)
+                .WithMany(c => c.Lessons)
+                .HasForeignKey(l => l.ChapterId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
+
+
         public DbSet<InternalTraining.Models.ViewModel.RegisterVm> RegisterVm { get; set; } = default!;
         public DbSet<InternalTraining.Models.ViewModel.LoginVm> LoginVm { get; set; } = default!;
         public DbSet<InternalTraining.Models.ViewModel.ForgetPasswordVm> ForgetPasswordVm { get; set; } = default!;

@@ -20,47 +20,80 @@
     <form asp-action="Edit" method="post">
         <input type="hidden" name="Id" value="@Model.Id" />
 
+        <!-- Exam Info -->
         <div class="card shadow mb-4">
             <div class="card-body">
                 <div class="form-group">
                     <label for="courseDropdown">Course</label>
                     <select class="form-control" id="courseDropdown" name="CourseId" required>
-                        <option value="" disabled selected>Select Course</option>
+                        <option value="" disabled>Select Course</option>
                         @foreach (var item in ViewBag.Courses)
                         {
                             if (item.Id == Model.Chapter.CourseId)
                             {
                                 <option value="@item.Id" selected>@item.Name</option>
                             }
-                           @*  else
+                            else
                             {
                                 <option value="@item.Id">@item.Name</option>
-                            } *@
+                            }
                         }
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>Name</label>
-                    <input class="form-control" name="Name" value="@Model.Name" />
+                    <input class="form-control" name="Name" value="@Model.Name" required />
                 </div>
 
-                <div class="form-group">
-                    <label>Chapter</label>
-                    <select class="form-control" name="ChapterId">
-                        @foreach (var item in chapters)
+                <label for="chapterDropdown">Chapter</label>
+                <select class="form-control" id="chapterDropdown" name="ChapterId" required>
+                    <option value="">-- Select Chapter --</option>
+
+                    @foreach (var item in ViewBag.Chapters)
+                    {
+                        if (item.Id == Model.ChapterId)
                         {
-                            if (item.Id == Model.ChapterId)
-                            {
-                                <option value="@item.Id" selected>@item.Name</option>
-                            }
-                          @*   else
-                            {
-                                <option value="@item.Id">@item.Name</option>
-                            } *@
+                            <option value="@item.Id" data-course-id="@item.CourseId" selected>@item.Name</option>
                         }
-                    </select>
-                </div>
+                        else
+                        {
+                            <option value="@item.Id" data-course-id="@item.CourseId">@item.Name</option>
+                        }
+                    }
+                </select>
+
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const courseDropdown = document.getElementById("courseDropdown");
+                        const chapterDropdown = document.getElementById("chapterDropdown");
+
+                        function filterChapters() {
+                            const selectedCourseId = courseDropdown.value;
+                            Array.from(chapterDropdown.options).forEach(option => {
+                                const courseId = option.getAttribute("data-course-id");
+                                if (!courseId || selectedCourseId === "" || courseId === selectedCourseId) {
+                                    option.hidden = false;
+                                } else {
+                                    option.hidden = true;
+                                }
+                            });
+
+                            // Optional: Reset chapter selection if it doesn't match the course
+                            const selectedOption = chapterDropdown.selectedOptions[0];
+                            if (selectedOption && selectedOption.hidden) {
+                                chapterDropdown.value = "";
+                            }
+                        }
+
+                        courseDropdown.addEventListener("change", filterChapters);
+                        filterChapters(); // Run on page load
+                    });
+                </script>
+
+
+
             </div>
         </div>
 

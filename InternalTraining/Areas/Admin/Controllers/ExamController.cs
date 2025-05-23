@@ -96,10 +96,17 @@ namespace InternalTraining.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetChaptersByCourse(int courseId, int? currentChapterId = null)
         {
-            var chapters = unitOfWork.Chapters.Get(e => e.CourseId == courseId && (e.Exam == null || e.Id == currentChapterId), includes: [e => e.Exam]).ToList();
+            var chapters = unitOfWork.Chapters.Get(
+                 e => e.CourseId == courseId && (e.Exam == null || e.Id == currentChapterId),
+                includes: new[] { (Expression<Func<Chapter, object>>)(e => e.Exam) }
+            )
+            .OrderBy(c => c.Name) // ممكن تغيّره لـ .OrderBy(c => c.Number) لو فيه ترتيب رقمي
+            .Select(c => new { c.Id, c.Name })
+            .ToList();
 
             return Json(chapters);
         }
+
         [HttpGet]
         public IActionResult Edit(int id)
 
@@ -119,7 +126,7 @@ namespace InternalTraining.Areas.Admin.Controllers
             var allChapters = unitOfWork.Chapters.Get().ToList();
 
             ViewBag.Courses = allCourses;
-            ViewBag.Chapters = allChapters;
+            ViewBag.Chapters = unitOfWork.Chapters.Get().ToList();
 
             return View(exam);
         }

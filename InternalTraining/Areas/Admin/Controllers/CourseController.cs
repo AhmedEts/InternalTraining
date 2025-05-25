@@ -146,7 +146,7 @@ namespace InternalTraining.Areas.Admin.Controllers
 
                 // Delete img name in db
                 course.CourseImage = null;
-                _unitOfWork.Courses.Commit();
+                _unitOfWork.Commit();
 
                 return RedirectToAction("Edit","Course" ,new { courseId });
               

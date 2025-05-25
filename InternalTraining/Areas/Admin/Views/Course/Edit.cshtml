@@ -34,12 +34,15 @@
 
                         <div class="mb-3">
                             <label for="Description" class="form-label">Description</label>
-                            <input type="text" class="form-control" id="Description" name="Description">       
+                                
+                            <input type="text" class="form-control" asp-for="Description" id="Description" />
+
                             <span class="text-danger" asp-validation-for="Description"></span>
                         </div>
                         <div class="mb-3">
                             <label for="NumberOfChapters" class="form-label">Number of Chapters</label>
-                            <input type="text" class="form-control" id="NumberOfChapters" asp-for="NumberOfChapters">
+                            <input type="text" class="form-control" asp-for="NumberOfChapters" id="NumberOfChapters">
+
                             <span class="text-danger" asp-validation-for="NumberOfChapters"></span>
                         </div>
 

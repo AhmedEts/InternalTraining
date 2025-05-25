@@ -24,7 +24,6 @@
 	
 	<ItemGroup>
 	  <Folder Include="Areas\Employee\Controllers\" />
-	  <Folder Include="wwwroot\images\admin\" />
 	</ItemGroup>
 
 </Project>

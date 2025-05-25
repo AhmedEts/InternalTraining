@@ -45,14 +45,21 @@
                             <tr>
                                 <td>@item.Name</td>
                                 <td class="text-center">
-                                    <img src="/images/admin/@item.CourseImage" alt="" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                    @*  <img src="/images/admin/@item.CourseImage" alt="" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;"> *@                                   
+                                    @{
+                                        var imageSrc = string.IsNullOrWhiteSpace(item.CourseImage)
+                                        ? Url.Content("~/images/admin/default-course.png")
+                                        : (item.CourseImage.StartsWith("http") ? item.CourseImage : Url.Content("~/images/admin/" + item.CourseImage));
+                                    }
+                                    <img src="@imageSrc"
+                                         alt="Course Image"
+                                         class="rounded-circle"
+                                         style="width: 50px; height: 50px; object-fit: cover;" />
                                 </td>
                                 <td>
-
                                     <a href="/Admin/Course/Edit?courseId=@item.Id" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-
 
                                     <button class="btn btn-danger btn-sm" onclick="confirmDelete(@item.Id)">
 

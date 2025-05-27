@@ -36,7 +36,7 @@ namespace InternalTraining.Data
                 .HasOne(l => l.Course)
                 .WithMany(c => c.Lessons)
                 .HasForeignKey(l => l.CourseId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Lesson>()
                 .HasOne(l => l.Chapter)

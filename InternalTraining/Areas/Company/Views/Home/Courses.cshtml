@@ -19,8 +19,8 @@
 
                             @{
                                 var imageSrc = string.IsNullOrWhiteSpace(item.CourseImage)
-                                ? Url.Content("~/images/company/default-course.png")
-                                : (item.CourseImage.StartsWith("http") ? item.CourseImage : Url.Content("~/images/company/" + item.CourseImage));
+                                ? Url.Content("~/images/admin/default-course.png")
+                                : (item.CourseImage.StartsWith("http") ? item.CourseImage : Url.Content("~/images/admin/" + item.CourseImage));
                             }
 
                             <a href="@Url.Action("Details", "Home", new { area = "Company", id = item.Id })">
@@ -43,7 +43,7 @@
                                 <p class="mb-0"><strong>Chapters:</strong> @item.NumberOfChapters</p> 
                                 @* <p class="mb-0"><strong>Chapters:</strong> @item.Chapters?.Count</p> *@
                                 <span class="text-muted">|</span>
-                                <p class="mb-0 fw-bold" style="color: #143D60;">$250</p>
+                                <p class="mb-0 fw-bold" style="color: #143D60;">$@item.Price</p>
                             </div>
 
                         </div>

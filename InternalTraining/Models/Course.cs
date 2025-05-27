@@ -24,6 +24,11 @@ namespace InternalTraining.Models
         [StringLength(300, MinimumLength = 10, ErrorMessage = "Description must be between 10 and 300 characters.")]
         public string Description { get; set; }
 
+        [Required]
+        [Range(0, double.MaxValue, ErrorMessage = "Please enter a valid price")]
+        public decimal Price { get; set; }
+
+
         [ValidateNever]
         public ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 
